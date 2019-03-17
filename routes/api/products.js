@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const multer = require('multer');
+const checkAuth = require('../../middleware/check-auth');
+
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, './uploads/');
@@ -30,7 +32,7 @@ const upload = multer({
 
 const Product = require('../../models/productModel');
 
-router.get('/', (req, res, next) => {
+router.get('/',checkAuth, (req, res, next) => {
     Product.find()
     .select('_id name price productImage')
     .exec()
@@ -77,8 +79,8 @@ router.get('/:productId', (req, res, next) => {
     });
 });
 
-router.post('/', upload.single('productImage') , (req, res, next) => {
-    console.log(req.file);
+router.post('/', checkAuth, upload.single('productImage') , (req, res, next) => {
+    //console.log(req.file);
     const p = new Product({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
@@ -114,6 +116,25 @@ router.delete('/:_id', (req, res, next) => {
         .then(result => {
             res.status(200).json({
                 message: 'Deleted product id ' + result.id + ' successfully.',
+                response: result
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            });
+        });
+});
+
+router.delete('/', (req, res, next) => {
+    console.log("delete all");
+    //res.status(200).json({msg: 'delete all'})
+
+    Product.remove({})
+        .exec()
+        .then(result => {
+            res.status(200).json({
+                message: 'Deleted product successfully.',
                 response: result
             });
         })

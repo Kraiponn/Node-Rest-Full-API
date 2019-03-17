@@ -1,3 +1,4 @@
 module.exports = {
-    mongoURI : "Hello Product for mongo"
+    mongoURI : "Hello Dev for mongo",
+    JWT_KEY: "supersecret"
 }

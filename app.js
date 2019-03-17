@@ -7,12 +7,14 @@ const app = express();
 
 const productRouter = require('./routes/api/products');
 const orderRouter = require('./routes/api/orders');
+const userRouter = require('./routes/api/users');
 
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/uploads', express.static('uploads'));
 
+mongoose.set('useCreateIndex', true);
 mongoose.connect(
     "mongodb+srv://node-shop:node-shop@node-rest-shop-kagtx.mongodb.net/test?retryWrites=true",
     { useNewUrlParser: true }
@@ -36,8 +38,10 @@ app.use(function(req, res, next) {
     next();
 });
 
+// Routes which should handle request
 app.use('/products', productRouter);
 app.use('/orders', orderRouter);
+app.use('/users', userRouter);
 
 
 app.get('/', (req, res) => {
